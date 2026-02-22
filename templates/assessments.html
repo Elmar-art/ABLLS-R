@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Оценивание</h1>
+  <div class="grid">
+    <div class="card">
+      <h2>Параметры оценки</h2>
+      <form class="form">
+        <label>
+          Ребенок
+          <select>
+            <option>Выберите ребенка</option>
+          </select>
+        </label>
+        <label>
+          Дата оценки
+          <input type="date">
+        </label>
+        <label>
+          Комментарий
+          <textarea rows="3" placeholder="Комментарий тераписта..."></textarea>
+        </label>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Критерии</h2>
+      <p>Клик по квадрату сохраняет результат.</p>
+      <div class="criteria-grid">
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+        <div class="criterion"></div>
+      </div>
+      <div class="status-list">
+        <div class="status-item">
+          <strong>Статус области:</strong>
+          <span class="badge in-progress">В работе</span>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

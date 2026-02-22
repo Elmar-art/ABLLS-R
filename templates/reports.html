@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Отчеты</h1>
+  <div class="grid">
+    <div class="card">
+      <h2>Формирование отчета</h2>
+      <form class="form">
+        <label>
+          Период
+          <div class="date-range">
+            <input type="date">
+            <span>—</span>
+            <input type="date">
+          </div>
+        </label>
+        <label>
+          Тип отчета
+          <select>
+            <option>Прогресс по областям</option>
+            <option>Сравнение периодов</option>
+          </select>
+        </label>
+        <button type="button">Сформировать</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Экспорт</h2>
+      <p>После формирования можно скачать PDF или Excel.</p>
+      <div class="button-row">
+        <button type="button">Скачать PDF</button>
+        <button type="button">Скачать Excel</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}

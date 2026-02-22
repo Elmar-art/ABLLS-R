@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Регистрация</h1>
+  <div class="card">
+    {% if errors %}
+      <ul class="errors">
+        {% for error in errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <form action="/auth/register" method="post" class="form">
+      <label>
+        Имя и фамилия
+        <input type="text" name="full_name" value="{{ form.full_name or '' }}" required>
+      </label>
+      <label>
+        Email
+        <input type="email" name="email" value="{{ form.email or '' }}" required>
+      </label>
+      <label>
+        Роль
+        <select name="role" required>
+          <option value="" disabled {% if not form.role %}selected{% endif %}>Выберите роль</option>
+          <option value="admin" {% if form.role == 'admin' %}selected{% endif %}>Администратор</option>
+          <option value="therapist" {% if form.role == 'therapist' %}selected{% endif %}>Терапист</option>
+          <option value="parent" {% if form.role == 'parent' %}selected{% endif %}>Родитель</option>
+        </select>
+      </label>
+      <label>
+        Пароль
+        <div class="password-field">
+          <input id="register_password" type="password" name="password" required minlength="8" pattern="\S{8,}" title="Не менее 8 символов." data-no-spaces="true">
+          <button type="button" class="password-toggle" data-toggle="password" data-target="register_password">Показать</button>
+        </div>
+        <small class="hint">Не менее 8 символов.</small>
+      </label>
+      <label>
+        Подтверждение пароля
+        <div class="password-field">
+          <input id="register_password_confirm" type="password" name="password_confirm" required minlength="8" pattern="\S{8,}" title="Не менее 8 символов." data-no-spaces="true">
+          <button type="button" class="password-toggle" data-toggle="password" data-target="register_password_confirm">Показать</button>
+        </div>
+        <small class="hint">Пароли должны совпадать.</small>
+      </label>
+      <button type="submit">Зарегистрироваться</button>
+      <p class="hint">Уже есть аккаунт? <a class="link" href="/auth/login">Войти</a></p>
+    </form>
+  </div>
+{% endblock %}

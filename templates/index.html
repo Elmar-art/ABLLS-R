@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero">
+    <h1>ABLLS-R Tracker: прототип</h1>
+    <p>Демонстрация логики оценивания, ролей пользователей и отчетов.</p>
+    <div class="hero-actions">
+      <a class="button" href="/auth/register">Создать аккаунт</a>
+      <a class="button ghost" href="/dashboard">Открыть панель</a>
+    </div>
+  </section>
+  <section class="grid">
+    <div class="card">
+      <h2>Роли</h2>
+      <p>Администратор, Терапист, Родитель с разными правами.</p>
+    </div>
+    <div class="card">
+      <h2>Оценивание</h2>
+      <p>Области, навыки, критерии с автосохранением по клику.</p>
+    </div>
+    <div class="card">
+      <h2>Отчеты</h2>
+      <p>Периодические сводки, экспорт PDF/Excel, графики прогресса.</p>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Дети</h1>
+  {% if current_user and current_user.role == "admin" %}
+    <div class="grid">
+      <div class="card">
+        <h2>Реестр детей</h2>
+        <p>Добавление, редактирование и удаление записей.</p>
+        <button type="button" class="button">Добавить ребенка</button>
+      </div>
+      <div class="card">
+        <h2>Назначение терапистов</h2>
+        <p>Связь тераписта и ребенка для работы по оцениванию.</p>
+        <button type="button" class="button">Назначить тераписта</button>
+      </div>
+    </div>
+  {% elif current_user and current_user.role == "therapist" %}
+    <div class="grid">
+      <div class="card">
+        <h2>Мои дети</h2>
+        <p>Список назначенных детей и быстрый переход к оцениванию.</p>
+        <div class="status-list">
+          <div class="status-item">
+            <strong>Иван П.</strong>
+            <a class="link" href="/assessments">Начать оценку</a>
+          </div>
+          <div class="status-item">
+            <strong>Мария К.</strong>
+            <a class="link" href="/assessments">Продолжить</a>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Комментарии</h2>
+        <p>Быстрые заметки по детям и коммуникация с администратором.</p>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

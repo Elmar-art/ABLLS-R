@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title or "ABLLS-R Tracker" }}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand">ABLLS-R Tracker</div>
+      <nav class="nav">
+        <a href="/">Главная</a>
+        {% if current_user %}
+          <a href="/dashboard">Панель</a>
+          {% if current_user.role in ["admin", "therapist"] %}
+            <a href="/children">Дети</a>
+          {% endif %}
+          {% if current_user.role == "therapist" %}
+            <a href="/assessments">Оценивание</a>
+            <a href="/requests">Мои запросы</a>
+          {% endif %}
+          {% if current_user.role == "parent" %}
+            <a href="/progress">Прогресс</a>
+          {% endif %}
+          {% if current_user.role in ["admin", "therapist", "parent"] %}
+            <a href="/reports">Отчеты</a>
+          {% endif %}
+          {% if current_user.role == "admin" %}
+            <a href="/admin/users">Пользователи</a>
+            <a href="/admin/edit-requests">Запросы</a>
+            <a href="/history">История</a>
+          {% endif %}
+        {% endif %}
+      </nav>
+      <div class="auth">
+        {% if current_user %}
+          <span class="user">{{ current_user.full_name }} ({{ role_labels.get(current_user.role, current_user.role) }})</span>
+          <form action="/auth/logout" method="post" class="logout">
+            <button type="submit">Выйти</button>
+          </form>
+        {% else %}
+          <a href="/auth/login">Войти</a>
+          <a class="cta" href="/auth/register">Регистрация</a>
+        {% endif %}
+      </div>
+    </header>
+    <main class="page">
+      {% if flash_message %}
+        <div class="flash">{{ flash_message }}</div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+    <script src="/static/app.js"></script>
+    <footer class="site-footer">Прототип интерфейса, данные не сохраняются.</footer>
+  </body>
+</html>

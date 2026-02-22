@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Панель</h1>
+  {% if current_user and current_user.role == "admin" %}
+    <div class="grid">
+      <div class="card">
+        <h2>Администрирование</h2>
+        <p>Управление пользователями и доступом.</p>
+        <a class="link" href="/admin/users">Перейти к пользователям</a>
+      </div>
+      <div class="card">
+        <h2>Запросы на редактирование</h2>
+        <p>Ожидают подтверждения и отклонения.</p>
+        <a class="link" href="/admin/edit-requests">Открыть запросы</a>
+      </div>
+      <div class="card">
+        <h2>Журнал изменений</h2>
+        <p>Контроль всех правок в системе.</p>
+        <a class="link" href="/history">Открыть журнал</a>
+      </div>
+    </div>
+  {% elif current_user and current_user.role == "therapist" %}
+    <div class="grid">
+      <div class="card">
+        <h2>Назначенные дети</h2>
+        <p>Быстрый доступ к вашим детям.</p>
+        <a class="link" href="/children">Перейти к списку</a>
+      </div>
+      <div class="card">
+        <h2>Оценивание</h2>
+        <p>Продолжите начатые оценки.</p>
+        <a class="link" href="/assessments">Открыть оценивание</a>
+      </div>
+      <div class="card">
+        <h2>Запросы</h2>
+        <p>Создайте запрос на редактирование областей.</p>
+        <a class="link" href="/requests">Мои запросы</a>
+      </div>
+    </div>
+  {% elif current_user and current_user.role == "parent" %}
+    <div class="grid">
+      <div class="card">
+        <h2>Прогресс</h2>
+        <p>Просмотр динамики навыков ребенка.</p>
+        <a class="link" href="/progress">Открыть прогресс</a>
+      </div>
+      <div class="card">
+        <h2>Отчеты</h2>
+        <p>Сформированные отчеты по периодам.</p>
+        <a class="link" href="/reports">Открыть отчеты</a>
+      </div>
+    </div>
+  {% endif %}
+  {% if current_user %}
+    <form action="/auth/logout" method="post" class="logout-panel">
+      <button type="submit">Выйти из системы</button>
+    </form>
+  {% endif %}
+{% endblock %}

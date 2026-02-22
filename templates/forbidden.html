@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="card">
+    <h1>Доступ ограничен</h1>
+    <p>У вашей роли нет доступа к этой странице.</p>
+    {% if required_roles %}
+      <p>Доступ разрешен ролям: {{ required_roles | join(", ") }}.</p>
+    {% endif %}
+    <a class="button" href="/dashboard">Вернуться на панель</a>
+  </div>
+{% endblock %}

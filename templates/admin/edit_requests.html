@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Админ: Запросы на редактирование</h1>
+  <div class="card">
+    <h2>Входящие запросы</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Ребенок</th>
+          <th>Область</th>
+          <th>Причина</th>
+          <th>Действие</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Иван П.</td>
+          <td>Коммуникация</td>
+          <td>Уточнение критериев</td>
+          <td>
+            <button type="button">Одобрить</button>
+            <button type="button" class="ghost">Отклонить</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

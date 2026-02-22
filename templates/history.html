@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>История</h1>
+  <div class="card">
+    <h2>Журнал изменений</h2>
+    <p>Кто, что и когда изменил. Записи не удаляются.</p>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Дата</th>
+          <th>Пользователь</th>
+          <th>Действие</th>
+          <th>Изменение</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>29.12.2025</td>
+          <td>Админ</td>
+          <td>Запрос</td>
+          <td>Одобрено редактирование</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

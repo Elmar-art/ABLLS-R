@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Мои запросы на редактирование</h1>
+  <div class="grid">
+    <div class="card">
+      <h2>Создать запрос</h2>
+      <form class="form">
+        <label>
+          Ребенок
+          <select>
+            <option>Выберите ребенка</option>
+          </select>
+        </label>
+        <label>
+          Область
+          <select>
+            <option>Выберите область</option>
+          </select>
+        </label>
+        <label>
+          Причина запроса
+          <textarea rows="4" placeholder="Опишите причину..."></textarea>
+        </label>
+        <button type="button">Отправить запрос</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Статус запросов</h2>
+      <div class="status-list">
+        <div class="status-item">
+          <strong>Коммуникация</strong>
+          <span class="badge pending">Ожидает</span>
+        </div>
+        <div class="status-item">
+          <strong>Навыки самообслуживания</strong>
+          <span class="badge approved">Одобрено</span>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
