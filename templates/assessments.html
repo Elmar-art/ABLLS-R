@@ -55,32 +55,44 @@
                   </div>
                 </div>
 
-                <form class="form skill-form" method="post" action="/assessments">
-                  <input type="hidden" name="child_id" value="{{ selected_child_id }}">
-                  <input type="hidden" name="skill_code" value="{{ task.code }}">
-                  <input type="hidden" name="assessment_date" value="{{ today }}">
+                {% if not latest %}
+                  <form class="form skill-form" method="post" action="/assessments">
+                    <input type="hidden" name="child_id" value="{{ selected_child_id }}">
+                    <input type="hidden" name="skill_code" value="{{ task.code }}">
+                    <input type="hidden" name="assessment_date" value="{{ today }}">
 
-                  <label>
-                    Балл
-                    <select name="score" required>
-                      {% for value in range(0, task.max_score + 1) %}
-                        <option value="{{ value }}" {% if latest and latest.score == value %}selected{% endif %}>{{ value }}</option>
-                      {% endfor %}
-                    </select>
-                  </label>
+                    <label>
+                      Балл
+                      <select name="score" required>
+                        {% for value in range(0, task.max_score + 1) %}
+                          <option value="{{ value }}">{{ value }}</option>
+                        {% endfor %}
+                      </select>
+                    </label>
 
-                  <label>
-                    Комментарий
-                    <input type="text" name="comment" placeholder="Короткое пояснение">
-                  </label>
+                    <label>
+                      Комментарий
+                      <input type="text" name="comment" placeholder="Короткое пояснение">
+                    </label>
 
-                  <label class="checkbox-inline">
-                    <input type="checkbox" name="is_prompted" value="true" {% if latest and latest.is_prompted %}checked{% endif %}>
-                    <span>С подсказкой</span>
-                  </label>
+                    <label class="checkbox-inline">
+                      <input type="checkbox" name="is_prompted" value="true">
+                      <span>С подсказкой</span>
+                    </label>
 
-                  <button type="submit">Сохранить</button>
-                </form>
+                    <button type="submit">Сохранить первичную оценку</button>
+                  </form>
+                {% else %}
+                  <p class="hint">
+                    Навык уже был оценен. Для изменения отправьте запрос с причиной и новым значением.
+                  </p>
+                  <a
+                    class="link-button"
+                    href="/requests?section={{ task.section_code }}&child_id={{ selected_child_id }}&skill_code={{ task.code }}"
+                  >
+                    Запрос на изменение
+                  </a>
+                {% endif %}
 
                 {% if latest %}
                   <p class="hint">Последнее обновление: {{ latest.assessment_date }}</p>

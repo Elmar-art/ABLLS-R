@@ -18,6 +18,7 @@
               <th>Код навыка</th>
               <th>Навык</th>
               <th>Причина</th>
+              <th>Запрошенное изменение</th>
               <th>Статус</th>
               <th>Решение</th>
             </tr>
@@ -32,16 +33,33 @@
                 <td>{{ req.area }}</td>
                 <td>{{ task.objective if task else "-" }}</td>
                 <td>{{ req.reason }}</td>
+                <td>
+                  {% if req.requested_score is not none %}
+                    {{ req.requested_score }}{% if task %} / {{ task.max_score }}{% endif %},
+                    {{ "с подсказкой" if req.requested_is_prompted else "самостоятельно" }}
+                    {% if req.requested_assessment_date %}, {{ req.requested_assessment_date }}{% endif %}
+                    {% if req.requested_comment %}<br>{{ req.requested_comment }}{% endif %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
                 <td>{{ req.status }}</td>
                 <td>
-                  <form class="form" method="post" action="/admin/edit-requests/{{ req.id }}/decision">
-                    <select name="decision" required>
-                      <option value="approved">Одобрить</option>
-                      <option value="rejected">Отклонить</option>
-                    </select>
-                    <input type="text" name="admin_comment" placeholder="Комментарий">
-                    <button type="submit">Сохранить</button>
-                  </form>
+                  {% if req.status == "pending" %}
+                    <form class="form" method="post" action="/admin/edit-requests/{{ req.id }}/decision">
+                      <select name="decision" required>
+                        <option value="approved">Одобрить</option>
+                        <option value="rejected">Отклонить</option>
+                      </select>
+                      <input type="text" name="admin_comment" placeholder="Комментарий">
+                      <button type="submit">Сохранить</button>
+                    </form>
+                  {% else %}
+                    <span class="hint">
+                      Обработан
+                      {% if req.applied_assessment_id %}<br>ID оценки: {{ req.applied_assessment_id }}{% endif %}
+                    </span>
+                  {% endif %}
                 </td>
               </tr>
             {% endfor %}

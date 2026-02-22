@@ -6,7 +6,7 @@
   </section>
 
   <section class="card">
-    <h2>Выбор ребенка</h2>
+    <h2>Фильтры отчета</h2>
     {% if visible_children %}
       <form class="form form-inline" method="get" action="/reports">
         <label>
@@ -17,8 +17,51 @@
             {% endfor %}
           </select>
         </label>
-        <button type="submit">Открыть отчет</button>
+
+        <label>
+          Раздел
+          <select name="section">
+            <option value="ALL" {% if selected_section == "ALL" %}selected{% endif %}>Все разделы</option>
+            {% for section in sections %}
+              <option value="{{ section.code }}" {% if section.code == selected_section %}selected{% endif %}>
+                {{ section.code }} - {{ section.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label>
+          Режим оценки
+          <select name="mode">
+            <option value="ALL" {% if selected_mode == "ALL" %}selected{% endif %}>Все режимы</option>
+            <option value="independent" {% if selected_mode == "independent" %}selected{% endif %}>Самостоятельно</option>
+            <option value="prompted" {% if selected_mode == "prompted" %}selected{% endif %}>С подсказкой</option>
+          </select>
+        </label>
+
+        <label>
+          Дата с
+          <input type="date" name="date_from" value="{{ selected_date_from }}">
+        </label>
+
+        <label>
+          Дата по
+          <input type="date" name="date_to" value="{{ selected_date_to }}">
+        </label>
+
+        <label>
+          Код навыка
+          <input type="text" name="skill_code" value="{{ selected_skill_code }}" placeholder="Напр. A или A1" maxlength="16" data-no-spaces="true">
+        </label>
+
+        <button type="submit">Применить</button>
+        <button type="submit" class="ghost" formaction="/reports/pdf" title="Скачать PDF с текущими фильтрами">
+          Скачать PDF
+        </button>
       </form>
+      {% if selected_child %}
+        <p class="hint">Найдено оценок по фильтру: <strong>{{ filtered_assessment_count }}</strong></p>
+      {% endif %}
     {% else %}
       <p>Нет детей, доступных для просмотра.</p>
     {% endif %}
@@ -26,6 +69,47 @@
 
   {% if selected_child %}
     <section class="panel-stack">
+      <article class="card">
+        <h2>ABLLS-R карта навыков (цветовой трекер)</h2>
+        <p class="hint">
+          Цвет показывает уровень освоения по последней оценке навыка в текущем фильтре.
+        </p>
+        <div class="ablls-legend">
+          <span><i class="ablls-legend-dot ablls-level-none"></i> Не оценено ({{ tracking_totals.none }})</span>
+          <span><i class="ablls-legend-dot ablls-level-low"></i> До 50% ({{ tracking_totals.low }})</span>
+          <span><i class="ablls-legend-dot ablls-level-mid"></i> От 50% до максимума ({{ tracking_totals.mid }})</span>
+          <span><i class="ablls-legend-dot ablls-level-mastered-prompted"></i> Освоено с подсказкой ({{ tracking_totals.mastered_prompted }})</span>
+          <span><i class="ablls-legend-dot ablls-level-mastered-independent"></i> Освоено самостоятельно ({{ tracking_totals.mastered_independent }})</span>
+        </div>
+        {% if tracking_columns %}
+          <div class="ablls-map-wrap">
+            <div class="ablls-map" aria-label="ABLLS-R карта навыков">
+              {% for column in tracking_columns %}
+                <section class="ablls-map-column">
+                  <div class="ablls-map-rows">
+                    {% for row in column.rows if row.has_task %}
+                      <div class="ablls-map-row{% if not row.has_task %} ablls-map-row-gap{% endif %}">
+                        <span class="ablls-map-code">{% if row.has_task %}{{ row.code }}{% endif %}</span>
+                        <span
+                          class="ablls-map-cell {{ row.level_class }}"
+                          {% if row.title %}title="{{ row.title }}"{% endif %}
+                        ></span>
+                      </div>
+                    {% endfor %}
+                  </div>
+                  <div class="ablls-map-section">
+                    <strong>{{ column.section_code }}</strong>
+                    <span>{{ column.section_name }}</span>
+                  </div>
+                </section>
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <p>Для выбранного фильтра нет навыков для отображения карты.</p>
+        {% endif %}
+      </article>
+
       <article class="card">
         <h2>Динамика по дням: Самостоятельно / С подсказкой</h2>
         {% if daily_points %}

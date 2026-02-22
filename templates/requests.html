@@ -29,7 +29,7 @@
           <select name="child_id" required>
             <option value="">Выберите ребенка</option>
             {% for child in assigned_children %}
-              <option value="{{ child.id }}">{{ child.full_name }}</option>
+              <option value="{{ child.id }}" {% if child.id == selected_request_child_id %}selected{% endif %}>{{ child.full_name }}</option>
             {% endfor %}
           </select>
         </label>
@@ -38,9 +38,29 @@
           <select name="skill_code" required>
             <option value="">Выберите навык</option>
             {% for task in section_tasks %}
-              <option value="{{ task.code }}">{{ task.code }} - {{ task.objective }}</option>
+              <option value="{{ task.code }}" {% if task.code == selected_request_skill_code %}selected{% endif %}>{{ task.code }} - {{ task.objective }}</option>
             {% endfor %}
           </select>
+        </label>
+        <label>
+          Новый балл
+          <select name="requested_score" required>
+            {% for value in range(0, 5) %}
+              <option value="{{ value }}">{{ value }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label class="checkbox-inline">
+          <input type="checkbox" name="requested_is_prompted" value="true">
+          <span>С подсказкой</span>
+        </label>
+        <label>
+          Дата нового значения
+          <input type="date" name="assessment_date" value="{{ today }}" required>
+        </label>
+        <label>
+          Комментарий к изменению
+          <input type="text" name="requested_comment" placeholder="Необязательно">
         </label>
         <label>
           Причина
@@ -61,6 +81,7 @@
                 <th>Ребенок</th>
                 <th>Код</th>
                 <th>Навык</th>
+                <th>Запрошено</th>
                 <th>Статус</th>
                 <th>Комментарий админа</th>
               </tr>
@@ -73,6 +94,15 @@
                   <td>{{ my_edit_request_child_map.get(req.child_id).full_name if my_edit_request_child_map.get(req.child_id) else req.child_id }}</td>
                   <td>{{ req.area }}</td>
                   <td>{{ task.objective if task else "-" }}</td>
+                  <td>
+                    {% if req.requested_score is not none %}
+                      {{ req.requested_score }}{% if task %} / {{ task.max_score }}{% endif %}
+                      , {{ "с подсказкой" if req.requested_is_prompted else "самостоятельно" }}
+                      {% if req.requested_assessment_date %}, {{ req.requested_assessment_date }}{% endif %}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
                   <td>
                     <span class="badge {{ 'approved' if req.status == 'approved' else ('pending' if req.status == 'pending' else 'in-progress') }}">
                       {{ req.status }}
