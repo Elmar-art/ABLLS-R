@@ -1,59 +1,63 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
-  <h1>Панель</h1>
+  <section class="page-head">
+    <h1 class="page-title">Рабочая панель</h1>
+    <p class="page-subtitle">Навигация по ключевым задачам вашего профиля.</p>
+  </section>
+
   {% if current_user and current_user.role == "admin" %}
-    <div class="grid">
-      <div class="card">
-        <h2>Администрирование</h2>
-        <p>Управление пользователями и доступом.</p>
-        <a class="link" href="/admin/users">Перейти к пользователям</a>
-      </div>
-      <div class="card">
-        <h2>Запросы на редактирование</h2>
-        <p>Ожидают подтверждения и отклонения.</p>
+    <section class="grid">
+      <article class="card">
+        <h2>Пользователи и роли</h2>
+        <p>Контроль состава команды, проверка ролей и мониторинг активности.</p>
+        <a class="link" href="/admin/users">Перейти к списку пользователей</a>
+      </article>
+
+      <article class="card">
+        <h2>Согласование запросов</h2>
+        <p>Проверка заявок терапистов на изменение оценок по навыкам ABLLS-R.</p>
         <a class="link" href="/admin/edit-requests">Открыть запросы</a>
-      </div>
-      <div class="card">
-        <h2>Журнал изменений</h2>
-        <p>Контроль всех правок в системе.</p>
-        <a class="link" href="/history">Открыть журнал</a>
-      </div>
-    </div>
+      </article>
+
+      <article class="card">
+        <h2>Журнал действий</h2>
+        <p>История изменений в системе: кто и когда вносил обновления.</p>
+        <a class="link" href="/history">Открыть историю</a>
+      </article>
+    </section>
   {% elif current_user and current_user.role == "therapist" %}
-    <div class="grid">
-      <div class="card">
+    <section class="grid">
+      <article class="card">
         <h2>Назначенные дети</h2>
-        <p>Быстрый доступ к вашим детям.</p>
-        <a class="link" href="/children">Перейти к списку</a>
-      </div>
-      <div class="card">
-        <h2>Оценивание</h2>
-        <p>Продолжите начатые оценки.</p>
-        <a class="link" href="/assessments">Открыть оценивание</a>
-      </div>
-      <div class="card">
-        <h2>Запросы</h2>
-        <p>Создайте запрос на редактирование областей.</p>
-        <a class="link" href="/requests">Мои запросы</a>
-      </div>
-    </div>
+        <p>Работа с детьми, закрепленными за вами администратором.</p>
+        <a class="link" href="/children">Открыть список детей</a>
+      </article>
+
+      <article class="card">
+        <h2>Оценивание ABLLS-R</h2>
+        <p>Постановка баллов по критериям навыков и обновление динамики прогресса.</p>
+        <a class="link" href="/assessments">Перейти к оцениванию</a>
+      </article>
+
+      <article class="card">
+        <h2>Запросы на правки</h2>
+        <p>Создание заявок на пересмотр спорных или уточняемых оценок.</p>
+        <a class="link" href="/requests">Открыть запросы</a>
+      </article>
+    </section>
   {% elif current_user and current_user.role == "parent" %}
-    <div class="grid">
-      <div class="card">
-        <h2>Прогресс</h2>
-        <p>Просмотр динамики навыков ребенка.</p>
+    <section class="grid">
+      <article class="card">
+        <h2>Прогресс ребенка</h2>
+        <p>Просмотр актуального освоения навыков по разделам ABLLS-R.</p>
         <a class="link" href="/progress">Открыть прогресс</a>
-      </div>
-      <div class="card">
+      </article>
+
+      <article class="card">
         <h2>Отчеты</h2>
-        <p>Сформированные отчеты по периодам.</p>
+        <p>Сводные таблицы и история последних оценок по ребенку.</p>
         <a class="link" href="/reports">Открыть отчеты</a>
-      </div>
-    </div>
-  {% endif %}
-  {% if current_user %}
-    <form action="/auth/logout" method="post" class="logout-panel">
-      <button type="submit">Выйти из системы</button>
-    </form>
+      </article>
+    </section>
   {% endif %}
 {% endblock %}

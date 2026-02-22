@@ -1,28 +1,55 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
-  <h1>Админ: Запросы на редактирование</h1>
-  <div class="card">
+  <section class="page-head">
+    <h1 class="page-title">Админ: согласование запросов</h1>
+    <p class="page-subtitle">Проверка входящих запросов терапистов на изменение оценок.</p>
+  </section>
+
+  <section class="card">
     <h2>Входящие запросы</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Ребенок</th>
-          <th>Область</th>
-          <th>Причина</th>
-          <th>Действие</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Иван П.</td>
-          <td>Коммуникация</td>
-          <td>Уточнение критериев</td>
-          <td>
-            <button type="button">Одобрить</button>
-            <button type="button" class="ghost">Отклонить</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    {% if edit_requests %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Терапист</th>
+              <th>Ребенок</th>
+              <th>Код навыка</th>
+              <th>Навык</th>
+              <th>Причина</th>
+              <th>Статус</th>
+              <th>Решение</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for req in edit_requests %}
+              {% set task = edit_request_task_map.get(req.area) %}
+              <tr>
+                <td>{{ req.created_at.strftime("%Y-%m-%d") }}</td>
+                <td>{{ edit_request_user_map.get(req.therapist_id).full_name if edit_request_user_map.get(req.therapist_id) else req.therapist_id }}</td>
+                <td>{{ edit_request_child_map.get(req.child_id).full_name if edit_request_child_map.get(req.child_id) else req.child_id }}</td>
+                <td>{{ req.area }}</td>
+                <td>{{ task.objective if task else "-" }}</td>
+                <td>{{ req.reason }}</td>
+                <td>{{ req.status }}</td>
+                <td>
+                  <form class="form" method="post" action="/admin/edit-requests/{{ req.id }}/decision">
+                    <select name="decision" required>
+                      <option value="approved">Одобрить</option>
+                      <option value="rejected">Отклонить</option>
+                    </select>
+                    <input type="text" name="admin_comment" placeholder="Комментарий">
+                    <button type="submit">Сохранить</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>Новых запросов нет.</p>
+    {% endif %}
+  </section>
 {% endblock %}

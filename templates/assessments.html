@@ -1,49 +1,136 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
-  <h1>Оценивание</h1>
-  <div class="grid">
-    <div class="card">
-      <h2>Параметры оценки</h2>
-      <form class="form">
-        <label>
-          Ребенок
-          <select>
-            <option>Выберите ребенка</option>
-          </select>
-        </label>
-        <label>
-          Дата оценки
-          <input type="date">
-        </label>
-        <label>
-          Комментарий
-          <textarea rows="3" placeholder="Комментарий тераписта..."></textarea>
-        </label>
-      </form>
-    </div>
-    <div class="card">
-      <h2>Критерии</h2>
-      <p>Клик по квадрату сохраняет результат.</p>
-      <div class="criteria-grid">
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-        <div class="criterion"></div>
-      </div>
-      <div class="status-list">
-        <div class="status-item">
-          <strong>Статус области:</strong>
-          <span class="badge in-progress">В работе</span>
+  <section class="page-head">
+    <h1 class="page-title">Оценивание ABLLS-R</h1>
+    <p class="page-subtitle">Выберите ребенка и раздел, затем выставляйте баллы по каждому навыку.</p>
+  </section>
+
+  <section class="card">
+    <h2>Фильтр</h2>
+    <form class="form form-inline" method="get" action="/assessments">
+      <label>
+        Ребенок
+        <select name="child_id" required onchange="this.form.submit()">
+          {% for child in assigned_children %}
+            <option value="{{ child.id }}" {% if child.id == selected_child_id %}selected{% endif %}>{{ child.full_name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Раздел ABLLS-R
+        <select name="section" required onchange="this.form.submit()">
+          {% for section in sections %}
+            <option value="{{ section.code }}" {% if section.code == selected_section %}selected{% endif %}>{{ section.code }} - {{ section.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </form>
+  </section>
+
+  <section class="panel-stack assessments-layout">
+    <article class="card assessments-primary">
+      <h2>Навыки раздела {{ selected_section or "-" }}</h2>
+      {% if selected_child_id and section_tasks %}
+        <div class="skill-list" data-accordion="skills">
+          {% for task in section_tasks %}
+            {% set latest = latest_by_skill.get(task.code) %}
+            {% set short_objective = task.objective[:120] ~ ('...' if task.objective|length > 120 else '') %}
+            <details class="skill-item{% if latest %} is-scored{% endif %}" {% if loop.first %}open{% endif %}>
+              <summary class="skill-summary">
+                <span class="skill-code">{{ task.code }}</span>
+                <span class="skill-title">{{ short_objective }}</span>
+                <span class="skill-last">{% if latest %}{{ latest.score }}{% else %}-{% endif %} / {{ task.max_score }}</span>
+                <span class="skill-chevron" aria-hidden="true"></span>
+              </summary>
+
+              <div class="skill-details">
+                <div class="skill-grid">
+                  <div class="skill-text-block">
+                    <h3>Описание навыка</h3>
+                    <p>{{ task.objective }}</p>
+                  </div>
+                  <div class="skill-text-block">
+                    <h3>Критерий оценки</h3>
+                    <p>{{ task.criteria }}</p>
+                  </div>
+                </div>
+
+                <form class="form skill-form" method="post" action="/assessments">
+                  <input type="hidden" name="child_id" value="{{ selected_child_id }}">
+                  <input type="hidden" name="skill_code" value="{{ task.code }}">
+                  <input type="hidden" name="assessment_date" value="{{ today }}">
+
+                  <label>
+                    Балл
+                    <select name="score" required>
+                      {% for value in range(0, task.max_score + 1) %}
+                        <option value="{{ value }}" {% if latest and latest.score == value %}selected{% endif %}>{{ value }}</option>
+                      {% endfor %}
+                    </select>
+                  </label>
+
+                  <label>
+                    Комментарий
+                    <input type="text" name="comment" placeholder="Короткое пояснение">
+                  </label>
+
+                  <label class="checkbox-inline">
+                    <input type="checkbox" name="is_prompted" value="true" {% if latest and latest.is_prompted %}checked{% endif %}>
+                    <span>С подсказкой</span>
+                  </label>
+
+                  <button type="submit">Сохранить</button>
+                </form>
+
+                {% if latest %}
+                  <p class="hint">Последнее обновление: {{ latest.assessment_date }}</p>
+                {% endif %}
+              </div>
+            </details>
+          {% endfor %}
         </div>
-      </div>
-    </div>
-  </div>
+      {% else %}
+        <p>Выберите ребенка и раздел, чтобы начать оценивание.</p>
+      {% endif %}
+    </article>
+
+    <article class="card assessments-secondary">
+      <details class="assessments-history">
+        <summary class="assessments-history-summary">
+          <span>Последние оценки</span>
+          <span class="hint">Открыть / скрыть</span>
+        </summary>
+
+        {% if recent_assessments %}
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th>Код</th>
+                  <th>Режим</th>
+                  <th>Навык</th>
+                  <th>Балл</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in recent_assessments %}
+                  {% set task = task_by_code.get(row.area) %}
+                  <tr>
+                    <td>{{ row.assessment_date }}</td>
+                    <td>{{ row.area }}</td>
+                    <td>{{ "С подсказкой" if row.is_prompted else "Самостоятельно" }}</td>
+                    <td>{{ task.objective if task else row.area }}</td>
+                    <td>{{ row.score }}{% if task %} / {{ task.max_score }}{% endif %}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p>Оценок пока нет.</p>
+        {% endif %}
+      </details>
+    </article>
+  </section>
 {% endblock %}

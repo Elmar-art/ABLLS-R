@@ -1,14 +1,93 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
-  <h1>Прогресс ребенка</h1>
-  <div class="grid">
-    <div class="card">
-      <h2>Обзор</h2>
-      <p>Здесь будет краткая сводка прогресса по областям.</p>
-    </div>
-    <div class="card">
-      <h2>График</h2>
-      <p>Линейный график по выбранному периоду.</p>
-    </div>
-  </div>
+  <section class="page-head">
+    <h1 class="page-title">Прогресс ребенка (ABLLS-R)</h1>
+    <p class="page-subtitle">Просматривайте освоение навыков и последние оценки по выбранному ребенку.</p>
+  </section>
+
+  <section class="card">
+    <h2>Выбор ребенка</h2>
+    {% if children %}
+      <form class="form form-inline" method="get" action="/progress">
+        <label>
+          Ребенок
+          <select name="child_id" required>
+            {% for child in children %}
+              <option value="{{ child.id }}" {% if child.id == selected_child_id %}selected{% endif %}>{{ child.full_name }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <button type="submit">Показать</button>
+      </form>
+    {% else %}
+      <p>Для вас пока не назначены дети.</p>
+    {% endif %}
+  </section>
+
+  {% if selected_child %}
+    <section class="grid">
+      <article class="card">
+        <h2>Сводка по разделам: {{ selected_child.full_name }}</h2>
+        {% if section_rows %}
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Раздел</th>
+                  <th>Освоено</th>
+                  <th>Оценено</th>
+                  <th>Всего навыков</th>
+                  <th>Выполнение (%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in section_rows %}
+                  <tr>
+                    <td>{{ row.section_code }} - {{ row.section_name }}</td>
+                    <td>{{ row.mastered }}</td>
+                    <td>{{ row.scored }}</td>
+                    <td>{{ row.total }}</td>
+                    <td>{{ row.completion_pct }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p>Оценки пока не заполнены.</p>
+        {% endif %}
+      </article>
+
+      <article class="card">
+        <h2>Последние оценки</h2>
+        {% if recent_assessments %}
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th>Код</th>
+                  <th>Навык</th>
+                  <th>Балл</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in recent_assessments %}
+                  {% set task = task_by_code.get(row.area) %}
+                  <tr>
+                    <td>{{ row.assessment_date }}</td>
+                    <td>{{ row.area }}</td>
+                    <td>{{ task.objective if task else "-" }}</td>
+                    <td>{{ row.score }}{% if task %} / {{ task.max_score }}{% endif %}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p>История оценок пока пуста.</p>
+        {% endif %}
+      </article>
+    </section>
+  {% endif %}
 {% endblock %}

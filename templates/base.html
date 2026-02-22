@@ -1,5 +1,5 @@
-<!doctype html>
-<html lang="en">
+﻿<!doctype html>
+<html lang="ru">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,18 +7,31 @@
     <link rel="stylesheet" href="/static/styles.css">
   </head>
   <body>
+    <div class="bg-orb bg-orb-a" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb-b" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb-c" aria-hidden="true"></div>
+
     <header class="site-header">
-      <div class="brand">ABLLS-R Tracker</div>
-      <nav class="nav">
+      <div class="brand-wrap">
+        <a class="brand" href="/">ABLLS-R Tracker</a>
+        <span class="brand-subtitle">Платформа оценки и прогресса в подходе ABA</span>
+      </div>
+
+      <button id="navToggle" class="nav-toggle" type="button" aria-controls="mainNav" aria-expanded="false">
+        Меню
+      </button>
+
+      <nav class="nav" id="mainNav">
         <a href="/">Главная</a>
         {% if current_user %}
           <a href="/dashboard">Панель</a>
+          <a href="/knowledge-base">База знаний</a>
           {% if current_user.role in ["admin", "therapist"] %}
             <a href="/children">Дети</a>
           {% endif %}
           {% if current_user.role == "therapist" %}
             <a href="/assessments">Оценивание</a>
-            <a href="/requests">Мои запросы</a>
+            <a href="/requests">Запросы</a>
           {% endif %}
           {% if current_user.role == "parent" %}
             <a href="/progress">Прогресс</a>
@@ -28,30 +41,40 @@
           {% endif %}
           {% if current_user.role == "admin" %}
             <a href="/admin/users">Пользователи</a>
-            <a href="/admin/edit-requests">Запросы</a>
+            <a href="/admin/edit-requests">Согласование</a>
             <a href="/history">История</a>
           {% endif %}
         {% endif %}
       </nav>
+
       <div class="auth">
         {% if current_user %}
-          <span class="user">{{ current_user.full_name }} ({{ role_labels.get(current_user.role, current_user.role) }})</span>
+          <div class="user-pill">
+            <span class="user-name">{{ current_user.full_name }}</span>
+            <span class="user-role">{{ role_labels.get(current_user.role, current_user.role) }}</span>
+          </div>
           <form action="/auth/logout" method="post" class="logout">
             <button type="submit">Выйти</button>
           </form>
         {% else %}
-          <a href="/auth/login">Войти</a>
-          <a class="cta" href="/auth/register">Регистрация</a>
+          <a class="link-button" href="/auth/login">Войти</a>
+          <a class="button" href="/auth/register">Регистрация</a>
         {% endif %}
       </div>
     </header>
+
     <main class="page">
       {% if flash_message %}
-        <div class="flash">{{ flash_message }}</div>
+        <div class="flash" data-autohide="true">{{ flash_message }}</div>
       {% endif %}
       {% block content %}{% endblock %}
     </main>
+
+    <footer class="site-footer">
+      <div>ABLLS-R Tracker</div>
+      <div>Пастельный интерфейс для ежедневной ABA-практики</div>
+    </footer>
+
     <script src="/static/app.js"></script>
-    <footer class="site-footer">Прототип интерфейса, данные не сохраняются.</footer>
   </body>
 </html>

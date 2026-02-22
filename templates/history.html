@@ -1,26 +1,37 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
-  <h1>История</h1>
-  <div class="card">
-    <h2>Журнал изменений</h2>
-    <p>Кто, что и когда изменил. Записи не удаляются.</p>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Дата</th>
-          <th>Пользователь</th>
-          <th>Действие</th>
-          <th>Изменение</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>29.12.2025</td>
-          <td>Админ</td>
-          <td>Запрос</td>
-          <td>Одобрено редактирование</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <section class="page-head">
+    <h1 class="page-title">История изменений</h1>
+    <p class="page-subtitle">Аудит действий в системе: кто, когда и что изменил.</p>
+  </section>
+
+  <section class="card">
+    <h2>Журнал</h2>
+    {% if logs %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Пользователь</th>
+              <th>Действие</th>
+              <th>Детали</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in logs %}
+              <tr>
+                <td>{{ log.created_at.strftime("%Y-%m-%d %H:%M") if log.created_at else "-" }}</td>
+                <td>{{ log_user_map.get(log.user_id).full_name if log.user_id and log_user_map.get(log.user_id) else "Система" }}</td>
+                <td>{{ log.action }}</td>
+                <td>{{ log.details }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>Журнал пока пуст.</p>
+    {% endif %}
+  </section>
 {% endblock %}

@@ -1,41 +1,92 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
-  <h1>Мои запросы на редактирование</h1>
-  <div class="grid">
-    <div class="card">
+  <section class="page-head">
+    <h1 class="page-title">Мои запросы на редактирование</h1>
+    <p class="page-subtitle">Создание и отслеживание заявок на пересмотр оценок по навыкам ABLLS-R.</p>
+  </section>
+
+  <section class="card">
+    <h2>Фильтр навыков</h2>
+    <form class="form form-inline" method="get" action="/requests">
+      <label>
+        Раздел ABLLS-R
+        <select name="section" required>
+          {% for section in sections %}
+            <option value="{{ section.code }}" {% if section.code == selected_section %}selected{% endif %}>{{ section.code }} - {{ section.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Показать навыки</button>
+    </form>
+  </section>
+
+  <section class="grid">
+    <article class="card">
       <h2>Создать запрос</h2>
-      <form class="form">
+      <form class="form" method="post" action="/requests">
         <label>
           Ребенок
-          <select>
-            <option>Выберите ребенка</option>
+          <select name="child_id" required>
+            <option value="">Выберите ребенка</option>
+            {% for child in assigned_children %}
+              <option value="{{ child.id }}">{{ child.full_name }}</option>
+            {% endfor %}
           </select>
         </label>
         <label>
-          Область
-          <select>
-            <option>Выберите область</option>
+          Навык ABLLS-R
+          <select name="skill_code" required>
+            <option value="">Выберите навык</option>
+            {% for task in section_tasks %}
+              <option value="{{ task.code }}">{{ task.code }} - {{ task.objective }}</option>
+            {% endfor %}
           </select>
         </label>
         <label>
-          Причина запроса
-          <textarea rows="4" placeholder="Опишите причину..."></textarea>
+          Причина
+          <textarea name="reason" rows="4" placeholder="Опишите, что нужно изменить" required></textarea>
         </label>
-        <button type="button">Отправить запрос</button>
+        <button type="submit">Отправить запрос</button>
       </form>
-    </div>
-    <div class="card">
+    </article>
+
+    <article class="card">
       <h2>Статус запросов</h2>
-      <div class="status-list">
-        <div class="status-item">
-          <strong>Коммуникация</strong>
-          <span class="badge pending">Ожидает</span>
+      {% if my_edit_requests %}
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Ребенок</th>
+                <th>Код</th>
+                <th>Навык</th>
+                <th>Статус</th>
+                <th>Комментарий админа</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for req in my_edit_requests %}
+                {% set task = task_by_code.get(req.area) %}
+                <tr>
+                  <td>{{ req.created_at.strftime("%Y-%m-%d") }}</td>
+                  <td>{{ my_edit_request_child_map.get(req.child_id).full_name if my_edit_request_child_map.get(req.child_id) else req.child_id }}</td>
+                  <td>{{ req.area }}</td>
+                  <td>{{ task.objective if task else "-" }}</td>
+                  <td>
+                    <span class="badge {{ 'approved' if req.status == 'approved' else ('pending' if req.status == 'pending' else 'in-progress') }}">
+                      {{ req.status }}
+                    </span>
+                  </td>
+                  <td>{{ req.admin_comment or "-" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-        <div class="status-item">
-          <strong>Навыки самообслуживания</strong>
-          <span class="badge approved">Одобрено</span>
-        </div>
-      </div>
-    </div>
-  </div>
+      {% else %}
+        <p>Запросов пока нет.</p>
+      {% endif %}
+    </article>
+  </section>
 {% endblock %}

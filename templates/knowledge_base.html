@@ -1,0 +1,78 @@
+﻿{% extends "base.html" %}
+{% block content %}
+  <section class="page-head">
+    <h1 class="page-title">База знаний ABLLS-R</h1>
+    <p class="page-subtitle">
+      Справочный read-only раздел по навыкам ABLLS-R. Выберите буквенный код секции,
+      затем раскрывайте строки для просмотра полного описания и критериев.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Фильтр по секции</h2>
+    <form class="form form-inline" method="get" action="/knowledge-base">
+      <label>
+        Секция (буквенный код)
+        <select name="section" required>
+          <option value="ALL" {% if selected_section == "ALL" %}selected{% endif %}>Все секции</option>
+          {% for section in sections %}
+            <option value="{{ section.code }}" {% if section.code == selected_section %}selected{% endif %}>
+              {{ section.code }} - {{ section.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Показать</button>
+    </form>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">Всего навыков в базе</div>
+        <div class="kpi-value">{{ knowledge_total }}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Показано по фильтру</div>
+        <div class="kpi-value">{{ knowledge_visible }}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Режим</div>
+        <div class="kpi-value">Только чтение</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Навыки</h2>
+    {% if knowledge_tasks %}
+      <div class="skill-list" data-accordion="skills">
+        {% for task in knowledge_tasks %}
+          {% set short_objective = task.objective[:160] ~ ('...' if task.objective|length > 160 else '') %}
+          <details class="skill-item" {% if loop.first %}open{% endif %}>
+            <summary class="skill-summary">
+              <span class="skill-code">{{ task.code }}</span>
+              <span class="skill-title">{{ short_objective }}</span>
+              <span class="skill-last">{{ task.section_code }}</span>
+              <span class="skill-chevron" aria-hidden="true"></span>
+            </summary>
+
+            <div class="skill-details">
+              <div class="skill-grid">
+                <div class="skill-text-block">
+                  <h3>Описание навыка</h3>
+                  <p>{{ task.objective }}</p>
+                </div>
+                <div class="skill-text-block">
+                  <h3>Критерий оценки</h3>
+                  <p>{{ task.criteria }}</p>
+                </div>
+              </div>
+              <p class="hint">Максимальный балл по критерию: {{ task.max_score }}</p>
+            </div>
+          </details>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>По выбранному фильтру навыков не найдено.</p>
+    {% endif %}
+  </section>
+{% endblock %}

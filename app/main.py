@@ -2,9 +2,11 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
+from app.core.ablls_catalog import ensure_ablls_catalog
 from app.core.config import settings
-from app.core.database import Base, engine
-from app.models import user as user_model
+from app.core.database import Base, SessionLocal, engine
+from app.core.runtime_schema import ensure_runtime_schema
+from app import models as app_models
 from app.routers import auth, pages
 
 app = FastAPI(title="ABLLS-R Tracker Prototype")
@@ -24,3 +26,6 @@ app.include_router(auth.router)
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
+    ensure_runtime_schema(engine)
+    with SessionLocal() as db:
+        ensure_ablls_catalog(db, "docs/WordTables_Combined.xlsx")

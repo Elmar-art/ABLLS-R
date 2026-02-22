@@ -1,51 +1,39 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
-  <h1>Админ: Пользователи</h1>
-  <div class="grid">
-    <div class="card">
-      <h2>Пользователи</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Имя</th>
-            <th>Email</th>
-            <th>Роль</th>
-            <th>Статус</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Админ</td>
-            <td>admin@example.com</td>
-            <td>Администратор</td>
-            <td><span class="badge approved">Активен</span></td>
-          </tr>
-          <tr>
-            <td>Терапист</td>
-            <td>therapist@example.com</td>
-            <td>Терапист</td>
-            <td><span class="badge pending">Ожидает</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="card">
-      <h2>Приглашение пользователя</h2>
-      <form class="form">
-        <label>
-          Email
-          <input type="email" placeholder="name@example.com">
-        </label>
-        <label>
-          Роль
-          <select>
-            <option>Администратор</option>
-            <option>Терапист</option>
-            <option>Родитель</option>
-          </select>
-        </label>
-        <button type="button">Отправить приглашение</button>
-      </form>
-    </div>
-  </div>
+  <section class="page-head">
+    <h1 class="page-title">Админ: пользователи</h1>
+    <p class="page-subtitle">Список зарегистрированных пользователей и их ролей.</p>
+  </section>
+
+  <section class="card">
+    <h2>Пользователи</h2>
+    {% if users %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Имя</th>
+              <th>Email</th>
+              <th>Роль</th>
+              <th>Дата регистрации</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+              <tr>
+                <td>{{ user.full_name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ role_labels.get(user.role, user.role) }}</td>
+                <td>{{ user.created_at.strftime("%Y-%m-%d") if user.created_at else "-" }}</td>
+                <td><span class="badge approved">Активен</span></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>Пользователей нет.</p>
+    {% endif %}
+  </section>
 {% endblock %}

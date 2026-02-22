@@ -1,39 +1,114 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
-  <h1>Дети</h1>
+  <section class="page-head">
+    <h1 class="page-title">Дети</h1>
+    <p class="page-subtitle">Реестр детей, назначения терапистов и родителей.</p>
+  </section>
+
   {% if current_user and current_user.role == "admin" %}
-    <div class="grid">
-      <div class="card">
+    <section class="grid">
+      <article class="card">
+        <h2>Добавить ребенка</h2>
+        <form class="form" method="post" action="/children">
+          <label>
+            ФИО
+            <input type="text" name="full_name" required>
+          </label>
+          <label>
+            Дата рождения
+            <input type="date" name="birth_date">
+          </label>
+          <label>
+            Примечание
+            <textarea name="notes" rows="3" placeholder="Короткий комментарий"></textarea>
+          </label>
+          <button type="submit">Сохранить</button>
+        </form>
+      </article>
+
+      <article class="card">
         <h2>Реестр детей</h2>
-        <p>Добавление, редактирование и удаление записей.</p>
-        <button type="button" class="button">Добавить ребенка</button>
-      </div>
-      <div class="card">
-        <h2>Назначение терапистов</h2>
-        <p>Связь тераписта и ребенка для работы по оцениванию.</p>
-        <button type="button" class="button">Назначить тераписта</button>
-      </div>
-    </div>
+        {% if children_list %}
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ФИО</th>
+                  <th>Дата рождения</th>
+                  <th>Тераписты</th>
+                  <th>Родители</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for child in children_list %}
+                  <tr>
+                    <td>{{ child.full_name }}</td>
+                    <td>{{ child.birth_date or "-" }}</td>
+                    <td>
+                      {% set therapists_for_child = child_therapists.get(child.id, []) %}
+                      {% if therapists_for_child %}
+                        {% for therapist in therapists_for_child %}
+                          <div>{{ therapist.full_name }}</div>
+                        {% endfor %}
+                      {% else %}
+                        <span class="badge pending">Не назначен</span>
+                      {% endif %}
+
+                      <form class="form form-inline" method="post" action="/children/{{ child.id }}/assign-therapist">
+                        <select name="therapist_id" required>
+                          <option value="">Выберите тераписта</option>
+                          {% for therapist in therapists %}
+                            <option value="{{ therapist.id }}">{{ therapist.full_name }}</option>
+                          {% endfor %}
+                        </select>
+                        <button type="submit">Назначить</button>
+                      </form>
+                    </td>
+                    <td>
+                      {% set parents_for_child = child_parents.get(child.id, []) %}
+                      {% if parents_for_child %}
+                        {% for parent in parents_for_child %}
+                          <div>{{ parent.full_name }}</div>
+                        {% endfor %}
+                      {% else %}
+                        <span class="badge pending">Не назначен</span>
+                      {% endif %}
+
+                      <form class="form form-inline" method="post" action="/children/{{ child.id }}/assign-parent">
+                        <select name="parent_id" required>
+                          <option value="">Выберите родителя</option>
+                          {% for parent in parents %}
+                            <option value="{{ parent.id }}">{{ parent.full_name }}</option>
+                          {% endfor %}
+                        </select>
+                        <button type="submit">Назначить</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p>Пока нет ни одного ребенка.</p>
+        {% endif %}
+      </article>
+    </section>
   {% elif current_user and current_user.role == "therapist" %}
-    <div class="grid">
-      <div class="card">
-        <h2>Мои дети</h2>
-        <p>Список назначенных детей и быстрый переход к оцениванию.</p>
+    <article class="card">
+      <h2>Мои дети</h2>
+      {% if assigned_children %}
         <div class="status-list">
-          <div class="status-item">
-            <strong>Иван П.</strong>
-            <a class="link" href="/assessments">Начать оценку</a>
-          </div>
-          <div class="status-item">
-            <strong>Мария К.</strong>
-            <a class="link" href="/assessments">Продолжить</a>
-          </div>
+          {% for child in assigned_children %}
+            <div class="status-item">
+              <strong>{{ child.full_name }}</strong>
+              <a class="link" href="/assessments">Открыть оценивание</a>
+            </div>
+          {% endfor %}
         </div>
-      </div>
-      <div class="card">
-        <h2>Комментарии</h2>
-        <p>Быстрые заметки по детям и коммуникация с администратором.</p>
-      </div>
-    </div>
+      {% else %}
+        <p>Вам пока не назначили детей.</p>
+      {% endif %}
+    </article>
   {% endif %}
 {% endblock %}

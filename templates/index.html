@@ -1,25 +1,62 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
   <section class="hero">
-    <h1>ABLLS-R Tracker: прототип</h1>
-    <p>Демонстрация логики оценивания, ролей пользователей и отчетов.</p>
+    <div class="page-head">
+      <h1 class="page-title">ABLLS-R Tracker</h1>
+      <p class="page-subtitle">
+        Единое пространство для команды ABA: оценивание навыков ABLLS-R, контроль ролей,
+        прозрачные отчеты и аккуратная история изменений.
+      </p>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">Каталог навыков</div>
+        <div class="kpi-value">533</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Разделы ABLLS-R</div>
+        <div class="kpi-value">25</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Роли в системе</div>
+        <div class="kpi-value">3</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Формат данных</div>
+        <div class="kpi-value">SQLite</div>
+      </div>
+    </div>
+
     <div class="hero-actions">
       <a class="button" href="/auth/register">Создать аккаунт</a>
       <a class="button ghost" href="/dashboard">Открыть панель</a>
     </div>
   </section>
+
   <section class="grid">
-    <div class="card">
-      <h2>Роли</h2>
-      <p>Администратор, Терапист, Родитель с разными правами.</p>
-    </div>
-    <div class="card">
-      <h2>Оценивание</h2>
-      <p>Области, навыки, критерии с автосохранением по клику.</p>
-    </div>
-    <div class="card">
-      <h2>Отчеты</h2>
-      <p>Периодические сводки, экспорт PDF/Excel, графики прогресса.</p>
-    </div>
+    <article class="card">
+      <h2>Роли и доступ</h2>
+      <p>
+        Администратор управляет пользователями и согласованиями. Терапист оценивает навыки
+        и отправляет запросы на изменения. Родитель наблюдает прогресс ребенка.
+      </p>
+    </article>
+
+    <article class="card">
+      <h2>Оценивание по коду навыка</h2>
+      <p>
+        Все оценки привязаны к коду ABLLS-R (например, A1, H12, Z4) и проверяются
+        по допустимой шкале каждого задания.
+      </p>
+    </article>
+
+    <article class="card">
+      <h2>Прогресс и отчеты</h2>
+      <p>
+        Сводка строится по разделам ABLLS-R: сколько навыков оценено, освоено,
+        и как меняется результат по времени.
+      </p>
+    </article>
   </section>
 {% endblock %}
